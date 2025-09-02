@@ -21,6 +21,13 @@
       <item>https://t.me/layout233</item>
    </string-array>
 
+   <string-array name="config_donate_list" translatable="false">
+      <item>https://buymeacoffee.com/hellboy017</item>
+      <item>https://buymeacoffee.com/hellboy017</item>
+      <item>https://buymeacoffee.com/hellboy017</item>
+      <item>https://buymeacoffee.com/hellboy017</item>
+   </string-array>
+
    <string-array name="config_group_list" translatable="false">
       <item>https://t.me/NeotericPong</item>
       <item>https://t.me/yoriscape</item>
