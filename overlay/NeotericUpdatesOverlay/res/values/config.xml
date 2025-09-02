@@ -5,6 +5,7 @@
       <item>alioth</item>
       <item>munch</item>
       <item>apollo</item>
+      <item>miatoll</item>
    </string-array>
 
    <string-array name="config_maintainer_name_list" translatable="false">
@@ -12,6 +13,7 @@
       <item>Yoriscape</item>
       <item>Yoriscape</item>
       <item>QKIvan</item>
+      <item>rbnj x reaPeR1010</item>
    </string-array>
 
    <string-array name="config_maintainer_link_list" translatable="false">
@@ -19,9 +21,11 @@
       <item>https://t.me/yoriscape</item>
       <item>https://t.me/yoriscape</item>
       <item>https://t.me/layout233</item>
+      <item>https://t.me/neoteric_miatoll</item>
    </string-array>
 
    <string-array name="config_donate_list" translatable="false">
+      <item>https://buymeacoffee.com/hellboy017</item>
       <item>https://buymeacoffee.com/hellboy017</item>
       <item>https://buymeacoffee.com/hellboy017</item>
       <item>https://buymeacoffee.com/hellboy017</item>
@@ -33,5 +37,6 @@
       <item>https://t.me/yoriscape</item>
       <item>https://t.me/yoriscape</item>
       <item>https://t.me/loop233_layout</item>
+      <item>https://t.me/neoteric_miatoll</item>
    </string-array>
 </resources>
