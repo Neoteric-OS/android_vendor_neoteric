@@ -107,12 +107,7 @@ PRODUCT_PACKAGES += \
     android.hidl.base@1.0.vendor \
     android.hidl.manager@1.0.vendor
 
-# Include fs tools for dedicated recovery and ramdisk partitions.
-PRODUCT_PACKAGES += \
-    e2fsck_ramdisk \
-    resize2fs_ramdisk \
-    tune2fs_ramdisk
-
+# Include fs tools for dedicated recovery partition.
 PRODUCT_PACKAGES += \
     e2fsck.recovery \
     resize2fs.recovery \
