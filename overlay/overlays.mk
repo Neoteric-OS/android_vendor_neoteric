@@ -23,6 +23,10 @@ PRODUCT_PACKAGES += \
     NeotericSystemUIOverlay \
     NeotericLauncherOverlay
 
+PRODUCT_PACKAGES += \
+    NTPServerOverlay \
+    CaptiveServerOverlay
+
 ifneq ($(IS_OFFICIAL), false)
 PRODUCT_PACKAGES += \
     NeotericUpdatesOverlay
