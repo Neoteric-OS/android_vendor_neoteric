@@ -15,3 +15,6 @@
 
 # Rules for QCOM targets
 include $(TOPDIR)vendor/neoteric/build/core/qcom_target.mk
+
+# Utils
+include $(TOPDIR)vendor/neoteric/build/core/utils.mk
