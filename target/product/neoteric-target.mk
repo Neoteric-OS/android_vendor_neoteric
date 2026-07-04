@@ -19,6 +19,9 @@ endif
 # Enable support for APEX updates
 $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
+# Exclude repos from bp scanning
+PRODUCT_SOURCE_ROOT_DIRS += -prebuilts/misc/protobuf_vendorcompat
+
 # b/344511668
 PRODUCT_PACKAGES += \
     android.software.credentials.prebuilt.xml
