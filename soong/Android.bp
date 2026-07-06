@@ -209,6 +209,7 @@ bootstrap_go_package {
     pkgPath: "neoteric/soong/generator",
     deps: [
         "blueprint",
+        "blueprint-proptools",
         "blueprint-pathtools",
         "soong",
         "soong-android",
