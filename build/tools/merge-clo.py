@@ -188,18 +188,22 @@ def merge_manifest(is_system, branch):
 
     manifest_path = "{0}/.repo/manifests/{1}.xml".format(WORKING_DIR, manifest_name)
 
-    # Delete the existing manifest if it exists
-    if os.path.exists(manifest_path):
-        os.remove(manifest_path)
-
     # Construct the raw URL for the manifest file
     raw_url = f"https://git.codelinaro.org/clo/la/la/{manifest_name}/manifest/-/raw/{branch}/{branch}.xml"
     print(f"Downloading manifest from: {raw_url}")
 
-    # Download the manifest using curl
+    # Download the manifest using curl. --fail keeps CLO error pages (404 for a
+    # bad tag, 429 when rate limited) from being written out as the manifest,
+    # and --retry rides out the rate limiting.
     subprocess.run(
         [
             "curl",
+            "--fail",
+            "--location",
+            "--retry",
+            "5",
+            "--retry-delay",
+            "10",
             "-o",
             manifest_path,
             raw_url
