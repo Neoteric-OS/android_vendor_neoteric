@@ -50,12 +50,6 @@
 
     <!-- Disable stock OTA components if installed -->
     <string-array name="config_globallyDisabledComponents" translatable="false">
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.AddShortcutActivity</item>
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.HistoryContentProvider</item>
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.HistoryActivity</item>
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicSettingsActivity</item>
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicNotificationsSettingsActivity</item>
-        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicSetupWizardActivity</item>
         <item>com.google.android.gms/com.google.android.gms.update.phone.PopupDialog</item>
         <item>com.google.android.gms/com.google.android.gms.update.OtaSuggestionSummaryProvider</item>
         <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateActivity</item>
@@ -63,6 +57,16 @@
         <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateService</item>
         <item>com.google.android.settings.intelligence/com.google.android.settings.intelligence.modules.batterywidget.impl.BatteryAppWidgetProvider</item>
         <item>com.google.android.settings.intelligence/com.google.android.settings.intelligence.modules.batterywidget.impl.BatteryWidgetPromoActivity</item>
+    </string-array>
+
+    <!-- Now Playing settings entries, which ASI disables on unsupported devices -->
+    <string-array name="config_forceEnabledComponents" translatable="false">
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.AddShortcutActivity</item>
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.HistoryContentProvider</item>
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.history.HistoryActivity</item>
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicSettingsActivity</item>
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicNotificationsSettingsActivity</item>
+        <item>com.google.android.as/com.google.intelligence.sense.ambientmusic.AmbientMusicSetupWizardActivity</item>
     </string-array>
 
     <!-- Set this to true to enable the platform's auto-power-save modes like doze and
@@ -245,7 +249,6 @@
         <item>device_personalization_services/Echo__smartspace_enable_paired_device_predictor=true</item>
         <item>device_personalization_services/Echo__smartspace_enable_ridesharing_eta=true</item>
         <item>device_personalization_services/Echo__smartspace_enable_safety_check_predictor=true</item>
-        <item>device_personalization_services/Echo__smartspace_enable_score_ranker=WEIGHTED</item>
         <item>device_personalization_services/Echo__smartspace_enable_score_ranker=true</item>
         <item>device_personalization_services/Echo__smartspace_enable_sensitive_notification_twiddler=true</item>
         <item>device_personalization_services/Echo__smartspace_enable_step_predictor=true</item>
@@ -310,6 +313,7 @@
         <item>device_personalization_services/NowPlaying__capture_own_speaker_allowed=true</item>
         <item>device_personalization_services/NowPlaying__cloud_api_allowed=true</item>
         <item>device_personalization_services/NowPlaying__dsp_model_checksum_enabled=false</item>
+        <item>device_personalization_services/NowPlaying__enable_now_playing_lock_screen_update=true</item>
         <item>device_personalization_services/NowPlaying__fast_recognition_ui_cleanup_enabled=true</item>
         <item>device_personalization_services/NowPlaying__favorites_enabled=true</item>
         <item>device_personalization_services/NowPlaying__feature_users_count_enabled=true</item>
@@ -321,15 +325,15 @@
         <item>device_personalization_services/NowPlaying__nnfp_v3_model_enabled=true</item>
         <item>device_personalization_services/NowPlaying__now_playing_allowed=true</item>
         <item>device_personalization_services/NowPlaying__on_demand_enable_eager_prompt=true</item>
+        <item>device_personalization_services/NowPlaying__on_demand_hide_if_fingerprinter_install_not_confirmed=false</item>
         <item>device_personalization_services/NowPlaying__on_demand_fingerprinter_being_setup_warning=true</item>
-        <item>device_personalization_services/NowPlaying__on_demand_hide_if_fingerprinter_install_not_confirmed=true</item>
         <item>device_personalization_services/NowPlaying__on_demand_min_supported_aga_version=12.35.17</item>
         <item>device_personalization_services/NowPlaying__on_demand_retry_fingerprinter_install=true</item>
         <item>device_personalization_services/NowPlaying__youtube_export_enabled=true</item>
 
         <!-- Live Translate -->
         <item>device_personalization_services/SimpleStorage__disable_live_translate_dao_provider=false</item>
-        <item>device_personalization_services/Translate__app_blocklist=com.google.android.platform.device_personalization_services/Translate__app_blocklist/string=com.google.android.talk,com.kakao.talk,com.google.android.apps.messaging,org.telegram.messenger,org.telegram.messenger.beta,org.thunderdog.challegram,org.thoughtcrime.securesms,com.whatsapp,com.facebook.orca,com.snapchat.android</item>
+        <item>device_personalization_services/Translate__app_blocklist=com.google.android.talk,com.kakao.talk,com.google.android.apps.messaging,org.telegram.messenger,org.telegram.messenger.beta,org.thunderdog.challegram,org.thoughtcrime.securesms,com.whatsapp,com.facebook.orca,com.snapchat.android</item>
         <item>device_personalization_services/Translate__beta_audio_to_text_languages_in_live_caption=</item>
         <item>device_personalization_services/Translate__blue_chip_translate_enabled=false</item>
         <item>device_personalization_services/Translate__characterset_lang_detection_enabled=false</item>
