@@ -1,0 +1,6 @@
+flag_value {
+  package: "com.android.launcher3"
+  name: "enable_compose_for_options_popup_menu_dialog"
+  state: ENABLED
+  permission: READ_ONLY
+}
