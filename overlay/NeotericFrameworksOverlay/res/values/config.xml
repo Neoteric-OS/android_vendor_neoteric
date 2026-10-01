@@ -472,6 +472,9 @@
             2 - Global actions menu
     -->
     <integer name="config_keyChordPowerVolumeUp">1</integer>
+
+    <!-- Allow double tapping an empty space on the lock screen to turn off the screen. -->
+    <bool name="config_supportDoubleTapSleep">true</bool>
     
     <string name="android_start_title">Android is starting...</string>
     <string name="android_upgrading_title">Android is upgrading...</string>
