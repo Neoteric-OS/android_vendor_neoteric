@@ -7,6 +7,7 @@
       <item>apollo</item>
       <item>miatoll</item>
       <item>peridot</item>
+      <item>Metroid</item>
    </string-array>
 
    <string-array name="config_maintainer_name_list" translatable="false">
@@ -16,6 +17,7 @@
       <item>QKIvan</item>
       <item>rbnj x reaPeR1010</item>
       <item>kenway214</item>
+      <item>HELLBOY017</item>
    </string-array>
 
    <string-array name="config_maintainer_link_list" translatable="false">
@@ -25,6 +27,7 @@
       <item>https://t.me/layout233</item>
       <item>https://t.me/neoteric_miatoll</item>
       <item>https://t.me/ph12nex</item>
+      <item>https://t.me/HELLBOY017</item>
    </string-array>
 
    <string-array name="config_donate_list" translatable="false">
@@ -34,6 +37,7 @@
       <item>https://buymeacoffee.com/hellboy017</item>
       <item>https://buymeacoffee.com/hellboy017</item>
       <item>https://buymeacoffee.com/kenway241</item>
+      <item>https://buymeacoffee.com/hellboy017</item>
    </string-array>
 
    <string-array name="config_group_list" translatable="false">
@@ -43,5 +47,6 @@
       <item>https://t.me/loop233_layout</item>
       <item>https://t.me/neoteric_miatoll</item>
       <item>https://t.me/pandemonium_haydn</item>
+      <item>https://t.me/NeotericMetroid</item>
    </string-array>
 </resources>
