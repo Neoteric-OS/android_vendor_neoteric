@@ -79,6 +79,10 @@ PRODUCT_PACKAGES += \
     fsck.exfat \
     mkfs.exfat
 
+# GameSpace
+PRODUCT_PACKAGES += \
+    GameSpace
+
 # Game frame rate
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
     debug.graphics.game_default_frame_rate.disabled=true
