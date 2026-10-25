@@ -14,7 +14,6 @@
 
 # Overlays
 PRODUCT_PACKAGES += \
-    CertifiedKeyboxOverlay \
     NeotericFrameworksOverlay \
     NeotericNetworkStackOverlay \
     NeotericOverlayStub \
