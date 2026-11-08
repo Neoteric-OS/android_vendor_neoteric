@@ -41,4 +41,7 @@
         <item>bottom_end:camera</item>
     </string-array>
 
+    <!-- Enable stacked dual SIM signal icons -->
+    <bool name="config_enable_stacked_icon">true</bool>
+
 </resources>
