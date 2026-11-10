@@ -44,4 +44,9 @@
     <!-- Enable stacked dual SIM signal icons -->
     <bool name="config_enable_stacked_icon">true</bool>
 
+    <!--
+    Whether Dual Shade should be enabled in the absence of an explicit preference set by the user.
+    -->
+    <bool name="config_dualShadeEnabledByDefault">false</bool>
+
 </resources>
