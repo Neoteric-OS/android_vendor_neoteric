@@ -101,6 +101,9 @@ $(call soong_config_set_if_exist,lineage_health,fast_charge_value_none,$(TARGET_
 $(call soong_config_set_if_exist,lineage_health,fast_charge_value_fast_charge,$(TARGET_HEALTH_FAST_CHARGE_VALUE_FAST_CHARGE))
 $(call soong_config_set_if_exist,lineage_health,fast_charge_value_super_fast_charge,$(TARGET_HEALTH_FAST_CHARGE_VALUE_SUPER_FAST_CHARGE))
 
+# SurfaceFlinger
+$(call soong_config_set_if_exist,surfaceflinger,udfps_lib,$(filter-out surfaceflinger_udfps_lib,$(TARGET_SURFACEFLINGER_UDFPS_LIB)))
+
 # Qualcomm variables
 SOONG_CONFIG_NAMESPACES += aosp_vs_qva
 SOONG_CONFIG_aosp_vs_qva += aosp_or_qva
