@@ -33,6 +33,7 @@ import argparse
 import os
 import shutil
 import subprocess
+import time
 import xml.etree.ElementTree as Et
 from concurrent.futures import ThreadPoolExecutor
 
@@ -452,6 +453,26 @@ def print_results(branch, wlan_tag=None):
         print("Unable to retrieve any results")
 
 
+def git_push(remote, refspec, max_retries=3):
+    """Pushes to remote using HTTP/1.1 to prevent HTTP2 framing errors, with retries."""
+    args = [
+        "git",
+        "-c", "http.version=HTTP/1.1",
+        "push",
+        remote,
+        refspec,
+        "--force",
+    ]
+    for attempt in range(1, max_retries + 1):
+        res = subprocess.run(args, capture_output=True, text=True)
+        if res.returncode == 0:
+            return True, None
+        err = res.stderr.strip()
+        if attempt < max_retries:
+            time.sleep(2 * attempt)
+    return False, err
+
+
 def push_successful_repos(successful_repos, is_system, branch, wlan_tag=None):
     revision = None
     with open("{0}/.repo/manifests/default.xml".format(WORKING_DIR)) as default_manifest:
@@ -470,31 +491,42 @@ def push_successful_repos(successful_repos, is_system, branch, wlan_tag=None):
     manifest_path = f"{WORKING_DIR}/.repo/manifests"
     os.chdir(manifest_path)
     try:
-        git.cmd.Git().add(f"{manifest_name}.xml")  # Stage all changes
+        git.cmd.Git().add(f"{manifest_name}.xml")  # Stage changes
         if not is_system and os.path.exists(f"{manifest_path}/wlan.xml"):
             git.cmd.Git().add("wlan.xml")
 
-        if not is_system and wlan_tag:
-            commit_msg = f"{manifest_name}: Update to {branch} and {wlan_tag}"
-        else:
-            commit_msg = f"{manifest_name}: Update to {branch}"
+        # Commit only if there are staged changes
+        has_staged_changes = subprocess.run(
+            ["git", "-C", manifest_path, "diff", "--cached", "--quiet"],
+            stderr=subprocess.DEVNULL,
+        ).returncode != 0
 
-        git.cmd.Git().commit(m=commit_msg, s=True)  # Commit with the provided message
-        git.cmd.Git().push("origin", f"HEAD:{revision}", "--force")
-        print(f"Pushing {manifest_path} changes to Neoteric.")
+        if has_staged_changes:
+            if not is_system and wlan_tag:
+                commit_msg = f"{manifest_name}: Update to {branch} and {wlan_tag}"
+            else:
+                commit_msg = f"{manifest_name}: Update to {branch}"
+            git.cmd.Git().commit(m=commit_msg, s=True)
     except GitCommandError as git_error:
         print(f"Failed to commit changes in {manifest_path}: {git_error}")
+
+    print(f"Pushing {manifest_path} changes to Neoteric...")
+    ok, err = git_push("origin", f"HEAD:{revision}")
+    if ok:
+        print(f"{manifest_path} pushed successfully.")
+    else:
+        print(f"Failed to push changes in {manifest_path}: {err}")
 
     # Push repository changes
     for repo in successful_repos:
         repo_path = f"{WORKING_DIR}/{repo}"
         print(f"Pushing {repo} to Neoteric...")
         os.chdir(repo_path)
-        try:
-            git.cmd.Git().push("neoteric", f"HEAD:{revision}", "--force")
+        ok, err = git_push("neoteric", f"HEAD:{revision}")
+        if ok:
             print(f"{repo} pushed successfully.")
-        except GitCommandError as git_error:
-            print(f"Failed to push {repo}: {git_error}")
+        else:
+            print(f"Failed to push {repo}: {err}")
 
 
 def main():
