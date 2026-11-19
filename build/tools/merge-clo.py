@@ -40,7 +40,7 @@ import git
 from git.exc import GitCommandError
 
 BASE_URL = "https://git.codelinaro.org/clo/la/"
-WORKING_DIR = "{0}/../../../..".format(os.path.dirname(os.path.realpath(__file__)))
+WORKING_DIR = os.path.realpath("{0}/../../../..".format(os.path.dirname(os.path.realpath(__file__))))
 MANIFEST_NAME = "neoteric.xml"
 REPOS_TO_MERGE = {}
 REPOS_RESULTS = {}
@@ -122,8 +122,9 @@ def force_sync(repo_lst):
     """ Force syncs all the repos that need to be merged """
     print("Syncing repos")
     for repo in repo_lst:
-        if os.path.isdir("{}{}".format(WORKING_DIR, repo)):
-            shutil.rmtree("{}{}".format(WORKING_DIR, repo))
+        repo_dir = "{0}/{1}".format(WORKING_DIR, repo)
+        if os.path.isdir(repo_dir):
+            shutil.rmtree(repo_dir)
 
     cpu_count = str(os.cpu_count())
     args = [
@@ -162,25 +163,26 @@ def get_tags_for_project(project_name, repo_path, revision):
         except subprocess.CalledProcessError:
             pass
 
-    url = "{}{}".format(BASE_URL, project_name)
-    try:
-        out = subprocess.check_output(
-            ["git", "ls-remote", "--tags", url],
-            text=True,
-            stderr=subprocess.DEVNULL,
-        )
-        for line in out.splitlines():
-            parts = line.split()
-            if len(parts) == 2:
-                commit, ref = parts[0], parts[1]
-                if commit == revision:
-                    tag = ref.replace("refs/tags/", "")
-                    if tag.endswith("^{}"):
-                        tag = tag[:-3]
-                    if tag.startswith("WLAN"):
-                        tags.add(tag)
-    except subprocess.CalledProcessError:
-        pass
+    if not tags:
+        url = "{}{}".format(BASE_URL, project_name)
+        try:
+            out = subprocess.check_output(
+                ["git", "ls-remote", "--tags", url],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            )
+            for line in out.splitlines():
+                parts = line.split()
+                if len(parts) == 2:
+                    commit, ref = parts[0], parts[1]
+                    if commit == revision:
+                        tag = ref.replace("refs/tags/", "")
+                        if tag.endswith("^{}"):
+                            tag = tag[:-3]
+                        if tag.startswith("WLAN"):
+                            tags.add(tag)
+        except subprocess.CalledProcessError:
+            pass
 
     return tags
 
@@ -203,7 +205,8 @@ def find_matched_wlan_tag(wlan_manifest_path):
     with ThreadPoolExecutor(max_workers=min(len(projects), 10)) as executor:
         results = list(executor.map(worker, projects))
 
-    common_tags = set.intersection(*results) if results else set()
+    valid_results = [r for r in results if r]
+    common_tags = set.intersection(*valid_results) if valid_results else set()
     if common_tags:
         matched_tag = sorted(list(common_tags))[-1]
         print(f"Matched WLAN tag: {matched_tag}")
@@ -218,6 +221,30 @@ def merge(repo_lst, is_system, branch, wlan_tag=None):
     failures = []
     successes = []
 
+    wlan_revisions = {}
+    if not is_system:
+        wlan_manifest_file = "{0}/.repo/manifests/wlan.xml".format(WORKING_DIR)
+        if os.path.exists(wlan_manifest_file):
+            with open(wlan_manifest_file) as wlan_manifest:
+                wlan_root = Et.parse(wlan_manifest).getroot()
+                for child in wlan_root.findall("project"):
+                    path = child.get("path")
+                    rev = child.get("revision")
+                    if path and rev:
+                        wlan_revisions[path] = rev
+
+    manifest_name = "system" if is_system else "vendor"
+    manifest_file = "{0}/.repo/manifests/{1}.xml".format(WORKING_DIR, manifest_name)
+    manifest_revisions = {}
+    if os.path.exists(manifest_file):
+        with open(manifest_file) as manifest:
+            root = Et.parse(manifest).getroot()
+            for child in root.findall("project"):
+                path = child.get("path")
+                rev = child.get("revision")
+                if path and rev:
+                    manifest_revisions[path] = rev
+
     for repo in repo_lst:
         if repo == "device/qcom/common":
             print(f"Skipping merge for {repo} as per exception rule.")
@@ -229,28 +256,11 @@ def merge(repo_lst, is_system, branch, wlan_tag=None):
         try:
             is_wlan = False
             revision = None
-            if not is_system:
-                wlan_manifest_file = "{0}/.repo/manifests/wlan.xml".format(WORKING_DIR)
-                if os.path.exists(wlan_manifest_file):
-                    with open(wlan_manifest_file) as wlan_manifest:
-                        wlan_root = Et.parse(wlan_manifest).getroot()
-                        for child in wlan_root.findall("project"):
-                            if child.get("path") == repo:
-                                revision = child.get("revision")
-                                is_wlan = True
-                                break
-
-            if not revision:
-                # Parse the XML file to get the revision
-                manifest_file = "{0}/.repo/manifests/system.xml".format(WORKING_DIR) if is_system else "{0}/.repo/manifests/vendor.xml".format(WORKING_DIR)
-                with open(manifest_file) as manifest:
-                    root = Et.parse(manifest).getroot()
-
-                    # Find the revision for the current repo
-                    for child in root.findall("project"):
-                        if child.get("path") == repo:
-                            revision = child.get("revision")
-                            break
+            if repo in wlan_revisions:
+                revision = wlan_revisions[repo]
+                is_wlan = True
+            elif repo in manifest_revisions:
+                revision = manifest_revisions[repo]
 
             if not revision:
                 print(f"Failed to find revision for {repo}")
@@ -303,9 +313,9 @@ def merge_manifest(is_system, branch):
             "10",
             "-o",
             manifest_path,
-            raw_url
+            raw_url,
         ],
-	check=True
+        check=True,
     )
 
     wlan_tag = None
@@ -335,7 +345,7 @@ def merge_manifest(is_system, branch):
         if wlan_manifest_tag:
             print(f"Found WLAN manifest tag from vendor manifest: {wlan_manifest_tag}")
             wlan_manifest_path = "{0}/.repo/manifests/wlan.xml".format(WORKING_DIR)
-            wlan_raw_url = f"{wlan_server}/{wlan_project}/-/raw/{wlan_manifest_tag}/{wlan_manifest_tag}.xml"
+            wlan_raw_url = f"{wlan_server}/{wlan_project}/-/raw/release/{wlan_manifest_tag}.xml"
             print(f"Downloading WLAN manifest from: {wlan_raw_url}")
             subprocess.run(
                 [
@@ -348,9 +358,9 @@ def merge_manifest(is_system, branch):
                     "10",
                     "-o",
                     wlan_manifest_path,
-                    wlan_raw_url
+                    wlan_raw_url,
                 ],
-                check=True
+                check=True,
             )
 
             # Clean up wlan.xml
@@ -379,10 +389,10 @@ def merge_manifest(is_system, branch):
         for elem in root.findall("remote") + root.findall("default"):
             root.remove(elem)
 
-	# Remove refs
+        # Remove refs
         for refs in root.findall("refs"):
             root.remove(refs)
-	    
+
         # Shallow clone
         if is_system:
             for project in root.findall("project"):
@@ -407,7 +417,7 @@ def print_results(branch, wlan_tag=None):
             print(success)
     print()
     if not REPOS_RESULTS["Failures"] and REPOS_RESULTS["Successes"]:
-        msg = branch.split("/")[2]
+        msg = branch.replace("refs/tags/", "")
         if wlan_tag:
             msg += f" and {wlan_tag}"
         print(f"{msg} merged successfully!")
