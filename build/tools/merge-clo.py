@@ -286,7 +286,7 @@ def merge_manifest(is_system, branch):
     manifest_path = "{0}/.repo/manifests/{1}.xml".format(WORKING_DIR, manifest_name)
 
     # Construct the raw URL for the manifest file
-    raw_url = f"https://git.codelinaro.org/clo/la/la/{manifest_name}/manifest/-/raw/{branch}/{branch}.xml"
+    raw_url = f"https://git.codelinaro.org/clo/la/la/{manifest_name}/manifest/-/raw/release/{branch}.xml"
     print(f"Downloading manifest from: {raw_url}")
 
     # Download the manifest using curl. --fail keeps CLO error pages (404 for a
