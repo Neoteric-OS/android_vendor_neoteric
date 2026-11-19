@@ -247,26 +247,57 @@ def merge(repo_lst, is_system, branch, wlan_tag=None):
             continue  # Skip this repository
 
         print("Merging " + repo)
-        os.chdir("{0}/{1}".format(WORKING_DIR, repo))
+        repo_dir = "{0}/{1}".format(WORKING_DIR, repo)
+        os.chdir(repo_dir)
 
-        try:
-            is_wlan = False
-            revision = None
-            if repo in wlan_revisions:
-                revision = wlan_revisions[repo]
-                is_wlan = True
-            elif repo in manifest_revisions:
-                revision = manifest_revisions[repo]
+        is_wlan = False
+        revision = None
+        if repo in wlan_revisions:
+            revision = wlan_revisions[repo]
+            is_wlan = True
+        elif repo in manifest_revisions:
+            revision = manifest_revisions[repo]
 
-            if not revision:
-                print(f"Failed to find revision for {repo}")
+        if not revision:
+            print(f"Failed to find revision for {repo}")
+            failures.append(repo)
+            continue
+
+        # Abort any stale in-progress merge causing exit code 128
+        has_merge_head = subprocess.run(
+            ["git", "-C", repo_dir, "rev-parse", "-q", "--verify", "MERGE_HEAD"],
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if has_merge_head:
+            print(f"Aborting previous in-progress merge in {repo}...")
+            subprocess.run(["git", "-C", repo_dir, "merge", "--abort"], check=False)
+
+        # Skip if already merged
+        if subprocess.run(
+            ["git", "-C", repo_dir, "merge-base", "--is-ancestor", revision, "HEAD"],
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0:
+            print(f"{repo} is already up to date.")
+            successes.append(repo)
+            continue
+
+        # Only fetch from CLO if commit is missing locally (avoids HTTP 429 & slowness)
+        has_commit = subprocess.run(
+            ["git", "-C", repo_dir, "cat-file", "-e", f"{revision}^{{commit}}"],
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+
+        remote_url = "{}{}".format(BASE_URL, repo_lst[repo])
+        if not has_commit:
+            try:
+                print(f"Fetching {revision} from {remote_url}...")
+                git.cmd.Git().fetch(remote_url, revision)
+            except GitCommandError as git_error:
+                print(f"Fetch failed for {repo}: {git_error}")
                 failures.append(repo)
                 continue
 
-            # Fetch the branch associated with the revision
-            remote_url = "{}{}".format(BASE_URL, repo_lst[repo])
-            git.cmd.Git().fetch(remote_url, revision)
-
+        try:
             # Merge the fetched revision into the current branch with a custom message
             if is_wlan and wlan_tag:
                 branch_name = wlan_tag.replace("refs/tags/", "")
