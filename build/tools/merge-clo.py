@@ -121,11 +121,6 @@ def read_custom_manifest(default_repos):
 def force_sync(repo_lst):
     """ Force syncs all the repos that need to be merged """
     print("Syncing repos")
-    for repo in repo_lst:
-        repo_dir = "{0}/{1}".format(WORKING_DIR, repo)
-        if os.path.isdir(repo_dir):
-            shutil.rmtree(repo_dir)
-
     cpu_count = str(os.cpu_count())
     args = [
         "repo",
@@ -137,9 +132,10 @@ def force_sync(repo_lst):
         "-j",
         cpu_count,
         "-q",
-    ] + list(repo_lst.values())
+    ] + list(repo_lst.keys())
     subprocess.run(
         args,
+        cwd=WORKING_DIR,
         check=False,
     )
 
